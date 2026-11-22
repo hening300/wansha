@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>玩啥 · 无聊的时候，玩啥！</title>
+<meta name="description" content="玩啥——轻量小游戏集合平台。无聊的时候，玩啥！">
+<style>
+:root{
+  --navy:#202746; --navy2:#2b3560; --orange:#FFB84D; --orange2:#FF9E2C;
+  --green:#68CFA4; --purple:#B49BF4; --ink:#23263b; --sub:#7a7f96;
+  --bg:#eef0f7; --card:#ffffff; --line:#e7e9f2; --radius:18px;
+  --nav-h:60px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0;background:
+  radial-gradient(600px 300px at 12% -5%,rgba(180,155,244,.28),transparent 60%),
+  radial-gradient(700px 340px at 95% 0%,rgba(255,184,77,.22),transparent 60%),
+  radial-gradient(800px 500px at 50% 115%,rgba(104,207,164,.20),transparent 60%);pointer-events:none}
+#app{position:relative;max-width:520px;margin:0 auto;min-height:100%;background:rgba(255,255,255,.55);box-shadow:0 0 40px rgba(32,39,70,.08);padding-bottom:calc(var(--nav-h) + 18px)}
+button{font:inherit;border:none;background:none;cursor:pointer;color:inherit}
+input,select{font:inherit}
+a{color:inherit;text-decoration:none}
+.view{display:none;animation:fade .22s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+/* ---------- hero ---------- */
+.hero{margin:14px 14px 6px;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 62%,#3a4470 100%);border-radius:24px;padding:20px 18px 18px;color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-46px;top:-46px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,184,77,.5),transparent 68%)}
+.hero .brand{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+.hero .mascot{width:58px;height:58px;flex:none;border-radius:18px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center}
+.hero .mascot svg{width:50px;height:50px}
+.hero h1{font-size:31px;letter-spacing:2px;line-height:1.1}
+.hero .slogan{color:var(--orange);font-weight:700;font-size:15px;margin-top:3px;letter-spacing:1px}
+.hero .search{margin-top:16px;position:relative;z-index:1;display:flex;gap:8px}
+.hero .search input{flex:1;border:none;border-radius:999px;padding:11px 16px;font-size:14px;outline:none;background:#fff;color:var(--ink)}
+.hero .search button{background:var(--orange);color:#5b3a00;font-weight:700;border-radius:999px;padding:0 20px;font-size:14px}
+.hero .search button:active{background:var(--orange2)}
+/* ---------- sections ---------- */
+.sec{margin:18px 14px 0}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.sec-h h2{font-size:18px;font-weight:800;letter-spacing:.5px}
+.sec-h h2 .dot{display:inline-block;width:8px;height:8px;border-radius:3px;background:var(--orange);margin-right:7px}
+.sec-h .more{font-size:13px;color:var(--sub)}
+/* ---------- cards ---------- */
+.big-card{display:block;background:var(--card);border-radius:22px;overflow:hidden;box-shadow:0 8px 22px rgba(32,39,70,.10);border:1px solid var(--line)}
+.big-card .cover{height:172px;position:relative}
+.big-card .cover svg{width:100%;height:100%;display:block}
+.big-card .info{padding:13px 15px 15px;display:flex;align-items:center;gap:10px}
+.big-card .info .t{flex:1;min-width:0}
+.big-card .name{font-size:18px;font-weight:800}
+.big-card .desc{font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.play-btn{background:var(--orange);color:#5b3a00;font-weight:800;border-radius:999px;padding:10px 22px;font-size:15px;box-shadow:0 4px 12px rgba(255,158,44,.4);flex:none}
+.play-btn:active{transform:scale(.96)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);box-shadow:0 4px 14px rgba(32,39,70,.06);position:relative;text-align:left;width:100%;display:block}
+.card .cover{height:104px;position:relative}
+.card .cover svg{width:100%;height:100%;display:block}
+.card .info{padding:9px 11px 11px}
+.card .name{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px}
+.card .desc{font-size:12px;color:var(--sub);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px;vertical-align:2px}
+.badge.hot{background:#ffe9c7;color:#9a6200}
+.badge.new{background:#dff5ea;color:#157347}
+.badge.soon{background:#e8e4fb;color:#5b48b8}
+.tag{display:inline-block;font-size:11px;color:var(--sub);background:#f2f3f9;border-radius:6px;padding:1px 7px;margin-top:6px}
+.fav-btn{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.15);z-index:2;line-height:1}
+.fav-btn.on{color:#ff5b7f}
+.fav-btn:not(.on){color:#c6c9d6}
+.soon-mask{position:absolute;inset:0;background:rgba(32,39,70,.34);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;letter-spacing:3px;font-size:15px}
+/* categories */
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cat-tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 6px 11px;text-align:center;box-shadow:0 3px 10px rgba(32,39,70,.05)}
+.cat-tile .ic{font-size:24px;line-height:1.2}
+.cat-tile .cn{font-size:13px;font-weight:700;margin-top:3px}
+.cat-tile:active{transform:scale(.97)}
+/* recent */
+.recent-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.recent-row::-webkit-scrollbar{display:none}
+.recent-item{flex:none;width:86px;text-align:center}
+.recent-item .rc{width:86px;height:64px;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.recent-item .rc svg{width:100%;height:100%;display:block}
+.recent-item .rn{font-size:12px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{color:var(--sub);font-size:13px;background:rgba(255,255,255,.7);border:1px dashed var(--line);border-radius:14px;padding:16px;text-align:center}
+/* ---------- hall ---------- */
+.page-h{padding:18px 14px 4px;display:flex;align-items:center;gap:10px}
+.page-h .back{width:36px;height:36px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:17px;display:flex;align-items:center;justify-content:center;flex:none}
+.page-h h2{font-size:21px;font-weight:800}
+.toolbar{margin:10px 14px 0;display:flex;gap:8px}
+.toolbar .searchbox{flex:1;display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:0 14px;align-items:center}
+.toolbar .searchbox input{flex:1;border:none;outline:none;padding:10px 2px;font-size:14px;background:none;min-width:0}
+.toolbar select{border:1px solid var(--line);background:#fff;border-radius:999px;padding:0 10px;font-size:13px;color:var(--ink);outline:none}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:12px 14px 2px;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:7px 15px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--sub)}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+/* ---------- detail ---------- */
+.detail-cover{margin:12px 14px 0;border-radius:22px;overflow:hidden;height:210px;box-shadow:0 8px 22px rgba(32,39,70,.12)}
+.detail-cover svg{width:100%;height:100%;display:block}
+.detail-body{margin:14px}
+.detail-body h2{font-size:23px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail-body .meta{margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.detail-body .blk{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 15px}
+.detail-body .blk h3{font-size:14px;font-weight:800;margin-bottom:5px;color:var(--navy)}
+.detail-body .blk p{font-size:14px;color:#454a63}
+.stat-row{display:flex;gap:10px;margin-top:14px}
+.stat-cell{flex:1;background:#fff;border:1px solid var(--line);border-radius:16px;padding:11px 6px;text-align:center}
+.stat-cell .v{font-size:19px;font-weight:800;color:var(--navy)}
+.stat-cell .k{font-size:12px;color:var(--sub)}
+.detail-actions{display:flex;gap:10px;margin-top:18px}
+.detail-actions .start{flex:1;background:var(--orange);color:#5b3a00;font-weight:800;font-size:17px;border-radius:999px;padding:14px 0;box-shadow:0 6px 16px rgba(255,158,44,.4)}
+.detail-actions .start:active{transform:scale(.98)}
+.detail-actions .fav2{width:52px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:21px;color:#c6c9d6}
+.detail-actions .fav2.on{color:#ff5b7f;border-color:#ffd3de}
+/* ---------- rank / me ---------- */
+.rank-hero{margin:14px;background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:22px;color:#fff;padding:22px 18px;text-align:center}
+.rank-hero .mascot{width:74px;height:74px;margin:0 auto 6px}
+.rank-hero .mascot svg{width:100%;height:100%}
+.rank-hero h3{font-size:19px}
+.rank-hero p{color:#c9cde0;font-size:13px;margin-top:4px}
+.rank-list{margin:0 14px}
+.rank-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:10px}
+.rank-row .no{width:30px;height:30px;border-radius:10px;background:#f2f3f9;font-weight:800;display:flex;align-items:center;justify-content:center;color:var(--navy);flex:none}
+.rank-row .no.top{background:var(--orange);color:#5b3a00}
+.rank-row .g{flex:1;min-width:0}
+.rank-row .g .n{font-weight:700}
+.rank-row .g .s{font-size:12px;color:var(--sub)}
+.rank-row .score{font-weight:800;color:var(--navy);font-size:17px}
+.me-head{margin:14px;background:linear-gradient(135deg,var(--navy),#3a4470);border-radius:22px;color:#fff;padding:18px;display:flex;align-items:center;gap:14px}
+.me-head .mascot{width:62px;height:62px;flex:none}
+.me-head .mascot svg{width:100%;height:100%}
+.me-head h3{font-size:19px}
+.me-head p{color:#c9cde0;font-size:13px}
+.achv-row{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:10px}
+.achv-row .ai{font-size:24px;width:42px;height:42px;border-radius:12px;background:#f2f3f9;display:flex;align-items:center;justify-content:center;flex:none}
+.achv-row.lock{opacity:.55}
+.achv-row .at{flex:1}
+.achv-row .at .n{font-weight:700;font-size:14px}
+.achv-row .at .d{font-size:12px;color:var(--sub)}
+.achv-row .st{font-size:12px;font-weight:700;color:#157347}
+.achv-row.lock .st{color:var(--sub)}
+.danger-btn{margin:18px 14px 0;width:calc(100% - 28px);padding:13px;border-radius:999px;background:#fff;border:1px solid #f3c2cb;color:#d64560;font-weight:700;font-size:14px}
+/* ---------- bottom nav ---------- */
+#tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;height:calc(var(--nav-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;z-index:50}
+#tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#9aa0b5;font-size:11px;font-weight:600}
+#tabbar button svg{width:23px;height:23px}
+#tabbar button.on{color:var(--navy)}
+#tabbar button.on .tb-ic{color:var(--orange2)}
+/* ---------- play overlay ---------- */
+#player{position:fixed;inset:0;background:#11142a;z-index:100;display:none;flex-direction:column}
+#player.on{display:flex}
+#player .pbar{height:50px;display:flex;align-items:center;gap:10px;padding:0 12px;color:#fff;background:var(--navy);flex:none}
+#player .pbar .back{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.14);color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center}
+#player .pbar .pt{font-weight:700;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#player .pbar .ext{font-size:12px;color:#ffd9a0;background:rgba(255,255,255,.12);padding:7px 11px;border-radius:999px}
+#player iframe{flex:1;width:100%;border:none;background:#fff}
+#player .pload{position:absolute;inset:50px 0 0;display:flex;align-items:center;justify-content:center;color:#aab;font-size:14px;pointer-events:none}
+/* toast */
+#toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 26px);transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.25);white-space:nowrap}
+#toast.on{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav id="tabbar"></nav>
+<div id="player">
+  <div class="pbar">
+    <button class="back" id="pBack" aria-label="返回">‹</button>
+    <div class="pt" id="pTitle">游戏</div>
+    <button class="ext" id="pExt">全屏打开</button>
+  </div>
+  <div class="pload" id="pLoad">游戏加载中…</div>
+  <iframe id="pFrame" title="game" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-orientation-lock"></iframe>
+</div>
+<div id="toast"></div>
+<script>
+/* ================= 品牌素材（SVG，全代码绘制） ================= */
+/* 吉祥物「玩玩」：橘猫头＋额头星星 */
+const MASCOT = `<svg viewBox="0 0 100 100" fill="none" aria-label="玩玩">
+<path d="M22 34 L18 12 L40 22 Z" fill="#FF9E2C"/>
+<path d="M78 34 L82 12 L60 22 Z" fill="#FF9E2C"/>
+<path d="M24 31 L21.5 17.5 L36 24 Z" fill="#FFD9A0"/>
+<path d="M76 31 L78.5 17.5 L64 24 Z" fill="#FFD9A0"/>
+<ellipse cx="50" cy="56" rx="36" ry="31" fill="#FFB84D"/>
+<path d="M50 24 l2.6 5.3 5.9.9 -4.3 4.1 1 5.8 -5.2-2.7 -5.2 2.7 1-5.8 -4.3-4.1 5.9-.9 Z" fill="#202746"/>
+<path d="M28 48 q6 -6 12 0" stroke="#202746" stroke-width="3.4" stroke-linecap="round"/>
+<path d="M60 48 q6 -6 12 0" stroke="#202746" stroke-width="3.4" stroke-linecap="round"/>
+<ellipse cx="50" cy="60" rx="4.6" ry="3.4" fill="#202746"/>
+<path d="M42 68 q8 7 16 0" stroke="#202746" stroke-width="3.4" stroke-linecap="round"/>
+<ellipse cx="29" cy="62" rx="6" ry="3.6" fill="#FF9E9E" opacity=".75"/>
+<ellipse cx="71" cy="62" rx="6" ry="3.6" fill="#FF9E9E" opacity=".75"/>
+</svg>`;
+/* 游戏封面（统一风格：圆角底色＋简笔场景） */
+const COVERS = {
+brushcat:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#FFE3B3"/><circle cx="336" cy="36" r="52" fill="#FFD9A0"/><rect y="152" width="400" height="48" fill="#F7C873"/><ellipse cx="188" cy="146" rx="118" ry="34" fill="#FF9E2C"/><circle cx="282" cy="122" r="40" fill="#FFB84D"/><path d="M252 96 L244 66 L272 80 Z" fill="#FF9E2C"/><path d="M300 92 L312 64 L326 88 Z" fill="#FF9E2C"/><path d="M266 118 q7 -6 14 0" stroke="#202746" stroke-width="4" stroke-linecap="round"/><path d="M86 128 q26 -14 52 -2" stroke="#E07F13" stroke-width="7" stroke-linecap="round" fill="none"/><g transform="rotate(30 150 102)"><rect x="142" y="30" width="16" height="58" rx="8" fill="#8A5A2B"/><rect x="124" y="84" width="52" height="17" rx="8" fill="#202746"/><path d="M133 101 v10 M145 101 v11 M157 101 v10 M168 101 v9" stroke="#202746" stroke-width="3.4" stroke-linecap="round"/></g><path d="M98 92 q8 -12 22 -15" stroke="#E07F13" stroke-width="4.4" stroke-linecap="round" fill="none" opacity=".65"/><text x="322" y="86" font-size="25" fill="#7A86AD" font-weight="700">Z</text><text x="342" y="66" font-size="18" fill="#7A86AD" font-weight="700">Z</text></svg>`,
+memory:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#DCD2FA"/><g><rect x="70" y="46" width="66" height="92" rx="12" fill="#fff"/><rect x="158" y="46" width="66" height="92" rx="12" fill="#B49BF4"/><rect x="246" y="46" width="66" height="92" rx="12" fill="#fff"/><path d="M103 74 l4.5 9.2 10.1 1.5 -7.3 7.1 1.7 10 -9 -4.7 -9 4.7 1.7 -10 -7.3 -7.1 10.1 -1.5Z" fill="#FFB84D"/><circle cx="279" cy="92" r="15" fill="#FFB84D"/><text x="191" y="106" font-size="34" fill="#fff" font-weight="800" text-anchor="middle">?</text></g><rect y="164" width="400" height="36" fill="#C4B2F5"/></svg>`,
+number:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#CDEEE0"/><g font-weight="800" text-anchor="middle"><rect x="92" y="38" width="66" height="66" rx="14" fill="#68CFA4"/><text x="125" y="82" font-size="30" fill="#fff">2</text><rect x="168" y="38" width="66" height="66" rx="14" fill="#3FB68A"/><text x="201" y="82" font-size="30" fill="#fff">4</text><rect x="244" y="38" width="66" height="66" rx="14" fill="#FFB84D"/><text x="277" y="82" font-size="28" fill="#5b3a00">16</text><rect x="130" y="114" width="66" height="66" rx="14" fill="#B49BF4"/><text x="163" y="158" font-size="28" fill="#fff">32</text><rect x="206" y="114" width="66" height="66" rx="14" fill="#202746"/><text x="239" y="158" font-size="26" fill="#FFB84D">64</text></g></svg>`,
+tap:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#FFE9C7"/><circle cx="200" cy="102" r="58" fill="#FFB84D"/><circle cx="200" cy="102" r="42" fill="#FFCF87"/><path d="M206 62 L182 106 h16 L190 142 L224 94 h-17 L216 62Z" fill="#202746"/><g stroke="#FF9E2C" stroke-width="6" stroke-linecap="round"><path d="M118 62 l-16 -14"/><path d="M282 62 l16 -14"/><path d="M104 108 h-22"/><path d="M296 108 h22"/></g></svg>`,
+quiz:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#D8E4FF"/><ellipse cx="150" cy="128" rx="76" ry="52" fill="#FFB84D"/><path d="M96 92 L88 58 L124 76 Z" fill="#FF9E2C"/><path d="M196 88 L210 56 L226 90 Z" fill="#FF9E2C"/><path d="M118 122 q8 -7 16 0" stroke="#202746" stroke-width="4.4" stroke-linecap="round"/><path d="M162 122 q8 -7 16 0" stroke="#202746" stroke-width="4.4" stroke-linecap="round"/><ellipse cx="148" cy="136" rx="5" ry="3.8" fill="#202746"/><rect x="238" y="42" width="104" height="72" rx="16" fill="#fff"/><path d="M262 114 l-4 20 l26 -18" fill="#fff"/><text x="290" y="94" font-size="42" fill="#B49BF4" font-weight="800" text-anchor="middle">?</text></svg>`,
+other:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#E8EAF3"/><circle cx="140" cy="100" r="34" fill="#B49BF4"/><circle cx="216" cy="100" r="34" fill="#68CFA4"/><circle cx="292" cy="100" r="34" fill="#FFB84D"/><g fill="#202746"><circle cx="128" cy="92" r="4"/><circle cx="152" cy="92" r="4"/><circle cx="204" cy="92" r="4"/><circle cx="228" cy="92" r="4"/><circle cx="280" cy="92" r="4"/><circle cx="304" cy="92" r="4"/></g><g stroke="#202746" stroke-width="4" stroke-linecap="round" fill="none"><path d="M128 110 q12 9 24 0"/><path d="M204 110 q12 9 24 0"/><path d="M280 110 q12 9 24 0"/></g></svg>`
+};
+const ICONS = {
+home:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg>`,
+games:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9h12a5 5 0 0 1 5 5.2c0 2.6-2.1 4.3-4.2 3.4L16 16H8l-2.8 1.6C3.1 18.5 1 16.8 1 14.2A5 5 0 0 1 6 9Z"/><path d="M7.5 12v4M5.5 14h4"/><circle cx="15.5" cy="13" r=".6" fill="currentColor"/><circle cx="18" cy="15.5" r=".6" fill="currentColor"/></svg>`,
+rank:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 5H4a1 1 0 0 0-1 1c0 2.2 1.8 4 4 4M17 5h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4 4"/><path d="M12 14v3M8.5 21h7M12 17c-1.4 1-2 2.3-2 4h4c0-1.7-.6-3-2-4Z"/></svg>`,
+me:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.4-3.4 4.2-5 7.5-5s6.1 1.6 7.5 5"/></svg>`
+};
+/* ================= 游戏注册表（新增游戏只改这里） ================= */
+const CATS = [
+  {id:'all',     name:'全部',     icon:'🎲'},
+  {id:'casual',  name:'休闲益智', icon:'🧩'},
+  {id:'reaction',name:'反应挑战', icon:'⚡'},
+  {id:'memory',  name:'脑力记忆', icon:'🧠'},
+  {id:'fun',     name:'趣味恶搞', icon:'😜'},
+  {id:'number',  name:'数字游戏', icon:'🔢'},
+  {id:'other',   name:'其他游戏', icon:'🎈'}
+];
+const catName = id => (CATS.find(c=>c.id===id)||{}).name || '其他游戏';
+/* 游戏成绩回传协议（跨域统一接口）：
+   游戏在 iframe 内结束一局后向父页面发送
+   postMessage({type:'wansha:result', game:'<游戏ID>', score:数字, rounds:数字, combo:数字}, '*')
+   平台校验来源域名后写入该游戏的独立统计，互不覆盖。 */
+const GAMES = [
+  { id:'brush-cat', name:'梳毛大师', cat:'reaction', cover:'brushcat',
+    desc:'趁猫睡着偷偷梳毛，耳朵一抖赶紧松手！',
+    how:'按住屏幕给猫咪梳毛，舒适度涨满即过关。猫咪耳朵抖动、尾巴扫动是苏醒预警，必须立刻松手；熬过假抖动、偷看和诈醒还能拿额外分。关卡越深，猫越会演戏！',
+    controls:'按住任意位置开始梳毛，松开停止。支持手机触摸与电脑鼠标。',
+    url:'https://white-surf-465c.hening300.workers.dev/',
+    origin:'https://white-surf-465c.hening300.workers.dev',
+    status:'live', hot:true, recommend:true, isNew:false, weight:100, launch:'2026-11-21' },
+  { id:'memory-flip', name:'记忆翻牌', cat:'memory', cover:'memory',
+    desc:'翻开卡片配对图案，考验你的记忆力。',
+    how:'', controls:'', url:'', origin:'', status:'coming', hot:true, recommend:false, isNew:true, weight:60, launch:'2026-12-05' },
+  { id:'tap-rush', name:'手速狂飙', cat:'casual', cover:'tap',
+    desc:'30 秒能点多少下？拼手速的时候到了。',
+    how:'', controls:'', url:'', origin:'', status:'coming', hot:false, recommend:false, isNew:true, weight:55, launch:'2026-12-03' },
+  { id:'number-merge', name:'数字合合乐', cat:'number', cover:'number',
+    desc:'滑动合并数字块，冲向传说中的 2048。',
+    how:'', controls:'', url:'', origin:'', status:'coming', hot:true, recommend:false, isNew:false, weight:50, launch:'2026-12-10' },
+  { id:'cat-quiz', name:'猫咪冷知识', cat:'fun', cover:'quiz',
+    desc:'关于猫的冷知识，你能答对几道？',
+    how:'', controls:'', url:'', origin:'', status:'coming', hot:false, recommend:false, isNew:false, weight:40, launch:'2026-12-15' }
+];
+const gameById = id => GAMES.find(g=>g.id===id);
+/* ================= 本地数据（游客模式，wansha_ 前缀，按游戏ID隔离） ================= */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('wansha_'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('wansha_'+k, JSON.stringify(v)); }catch(e){} }
+};
+let recent = store.get('recent', []);            // [{id, t}]
+let favs   = store.get('favs', []);              // [id]
+let stats  = store.get('stats', {});             // {id:{plays, best, last}}
+let achvDone = store.get('achv', []);            // [achvId]
+const ACHV = [
+  {id:'first-play', icon:'🎮', name:'第一次开玩', desc:'启动任意一款游戏', test:s=>s.totalPlays>=1},
+  {id:'play-10',    icon:'🔥', name:'渐入佳境',   desc:'累计游玩 10 次',   test:s=>s.totalPlays>=10},
+  {id:'play-50',    icon:'🏅', name:'玩啥达人',   desc:'累计游玩 50 次',   test:s=>s.totalPlays>=50},
+  {id:'fav-1',      icon:'⭐', name:'有了偏爱',   desc:'收藏第一款游戏',   test:s=>s.favCount>=1},
+  {id:'fav-3',      icon:'💝', name:'博爱玩家',   desc:'收藏 3 款游戏',     test:s=>s.favCount>=3},
+  {id:'brush-500',  icon:'🐱', name:'梳毛高手',   desc:'梳毛大师单局达到 500 分', test:s=>(s.best['brush-cat']||0)>=500},
+  {id:'brush-1500', icon:'👑', name:'梳毛大师本师', desc:'梳毛大师单局达到 1500 分', test:s=>(s.best['brush-cat']||0)>=1500}
+];
+function summary(){
+  const best = {}; let totalPlays = 0; const playedIds = Object.keys(stats);
+  playedIds.forEach(id=>{ best[id] = stats[id].best || 0; totalPlays += stats[id].plays || 0; });
+  return { best, totalPlays, playedCount: playedIds.filter(id=>(stats[id].plays||0)>0).length, favCount: favs.length };
+}
+function checkAchv(){
+  const s = summary(); let changed = false;
+  ACHV.forEach(a=>{ if(!achvDone.includes(a.id) && a.test(s)){ achvDone.push(a.id); changed = true; setTimeout(()=>toast('🏆 成就解锁：'+a.name), 350); } });
+  if(changed) store.set('achv', achvDone);
+}
+function recordPlay(id){
+  if(!stats[id]) stats[id] = {plays:0, best:0, last:0};
+  stats[id].plays++; stats[id].last = Date.now();
+  store.set('stats', stats);
+  recent = [{id, t:Date.now()}].concat(recent.filter(r=>r.id!==id)).slice(0, 8);
+  store.set('recent', recent);
+  checkAchv();
+}
+function recordScore(id, score){
+  if(!stats[id]) stats[id] = {plays:0, best:0, last:0};
+  if(score > (stats[id].best||0)){ stats[id].best = score; store.set('stats', stats); toast('🎉 新纪录！'+score+' 分'); }
+  checkAchv();
+}
+function toggleFav(id){
+  if(favs.includes(id)){ favs = favs.filter(f=>f!==id); toast('已取消收藏'); }
+  else { favs.push(id); toast('已收藏 ⭐'); }
+  store.set('favs', favs); checkAchv(); render();
+}
+let toastTimer = null;
+function toast(msg){
+  const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>el.classList.remove('on'), 2200);
+}
+</script>
+<script>
+/* ================= 视图渲染 ================= */
+const app = document.getElementById('app');
+const esc = s => String(s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function badges(g){
+  let b = '';
+  if(g.status==='coming') b += '<span class="badge soon">即将上线</span>';
+  else if(g.isNew) b += '<span class="badge new">NEW</span>';
+  else if(g.hot) b += '<span class="badge hot">热门</span>';
+  return b;
+}
+function cardHTML(g){
+  const fav = favs.includes(g.id);
+  const soon = g.status==='coming';
+  return `<button class="card" onclick="go('#/game/${g.id}')">
+    <span class="fav-btn ${fav?'on':''}" onclick="event.stopPropagation();toggleFav('${g.id}')" aria-label="收藏">${fav?'♥':'♡'}</span>
+    <div class="cover">${COVERS[g.cover]||COVERS.other}${soon?'<div class="soon-mask">即将上线</div>':''}</div>
+    <div class="info"><div class="name">${esc(g.name)} ${badges(g)}</div>
+    <div class="desc">${esc(g.desc)}</div><span class="tag">${catName(g.cat)}</span></div></button>`;
+}
+function viewHome(){
+  const rec = GAMES.find(g=>g.recommend && g.status==='live') || GAMES[0];
+  const hot = GAMES.filter(g=>g.hot).sort((a,b)=>b.weight-a.weight);
+  const news = [...GAMES].sort((a,b)=> b.launch.localeCompare(a.launch));
+  const recents = recent.map(r=>gameById(r.id)).filter(Boolean);
+  return `<div class="view on">
+  <div class="hero"><div class="brand"><div class="mascot">${MASCOT}</div>
+    <div><h1>玩啥</h1><div class="slogan">无聊的时候，玩啥！</div></div></div>
+    <div class="search"><input id="homeSearch" placeholder="搜游戏：试试「梳毛」" enterkeyhint="search"><button onclick="doSearch()">搜索</button></div></div>
+  <div class="sec"><div class="sec-h"><h2><span class="dot"></span>今日推荐</h2></div>
+    <a class="big-card" href="#/game/${rec.id}"><div class="cover">${COVERS[rec.cover]||COVERS.other}</div>
+    <div class="info"><div class="t"><div class="name">${esc(rec.name)} ${badges(rec)}</div><div class="desc">${esc(rec.desc)}</div></div>
+    <span class="play-btn">开始玩</span></div></a></div>
+  <div class="sec"><div class="sec-h"><h2><span class="dot"></span>游戏分类</h2><a class="more" href="#/games">全部游戏 ›</a></div>
+    <div class="cats">${CATS.filter(c=>c.id!=='all').map(c=>`<button class="cat-tile" onclick="go('#/games?cat=${c.id}')"><div class="ic">${c.icon}</div><div class="cn">${c.name}</div></button>`).join('')}</div></div>
+  <div class="sec"><div class="sec-h"><h2><span class="dot"></span>热门游戏</h2><a class="more" href="#/games">更多 ›</a></div>
+    <div class="grid">${hot.map(cardHTML).join('')}</div></div>
+  ${recents.length?`<div class="sec"><div class="sec-h"><h2><span class="dot"></span>最近玩过</h2></div>
+    <div class="recent-row">${recents.map(g=>`<div class="recent-item" onclick="go('#/game/${g.id}')"><div class="rc">${COVERS[g.cover]||COVERS.other}</div><div class="rn">${esc(g.name)}</div></div>`).join('')}</div></div>`:''}
+  <div class="sec"><div class="sec-h"><h2><span class="dot"></span>新游戏推荐</h2></div>
+    <div class="grid">${news.map(cardHTML).join('')}</div></div>
+  </div>`;
+}
+let hallState = { cat:'all', q:'', sort:'hot' };
+function viewGames(){
+  let list = GAMES.filter(g=> (hallState.cat==='all' || g.cat===hallState.cat) && g.name.includes(hallState.q));
+  list.sort((a,b)=> hallState.sort==='new' ? b.launch.localeCompare(a.launch) : b.weight-a.weight);
+  return `<div class="view on">
+  <div class="page-h"><h2>🎮 游戏大厅</h2></div>
+  <div class="toolbar"><div class="searchbox">🔍<input id="hallSearch" placeholder="搜索游戏名称" value="${esc(hallState.q)}" enterkeyhint="search"></div>
+    <select id="hallSort"><option value="hot" ${hallState.sort==='hot'?'selected':''}>最热门</option><option value="new" ${hallState.sort==='new'?'selected':''}>最新上线</option></select></div>
+  <div class="chips">${CATS.map(c=>`<button class="chip ${hallState.cat===c.id?'on':''}" onclick="setCat('${c.id}')">${c.icon} ${c.name}</button>`).join('')}</div>
+  <div class="sec" style="margin-top:12px">${list.length?`<div class="grid">${list.map(cardHTML).join('')}</div>`:`<div class="empty">没有找到符合条件的游戏，换个关键词试试～</div>`}</div>
+  </div>`;
+}
+function viewDetail(id){
+  const g = gameById(id); if(!g) return `<div class="view on"><div class="sec"><div class="empty">游戏不存在</div></div></div>`;
+  const st = stats[id] || {plays:0, best:0};
+  const fav = favs.includes(id);
+  const soon = g.status==='coming';
+  return `<div class="view on">
+  <div class="page-h"><button class="back" onclick="history.back()">‹</button><h2>游戏详情</h2></div>
+  <div class="detail-cover">${COVERS[g.cover]||COVERS.other}</div>
+  <div class="detail-body"><h2>${esc(g.name)} ${badges(g)}</h2>
+    <div class="meta"><span class="tag" style="margin-top:0">${catName(g.cat)}</span><span class="tag" style="margin-top:0">上线 ${g.launch}</span></div>
+    <div class="stat-row">
+      <div class="stat-cell"><div class="v">${st.best||0}</div><div class="k">个人最高分</div></div>
+      <div class="stat-cell"><div class="v">${st.plays||0}</div><div class="k">游玩次数</div></div>
+      <div class="stat-cell"><div class="v">${fav?'已收藏':'—'}</div><div class="k">收藏状态</div></div></div>
+    ${soon?`<div class="blk"><h3>敬请期待</h3><p>这款游戏正在制作中，先去玩玩其他游戏吧！</p></div>`
+    :`<div class="blk"><h3>玩法介绍</h3><p>${esc(g.how)}</p></div><div class="blk"><h3>操作说明</h3><p>${esc(g.controls)}</p></div>`}
+    <div class="detail-actions">
+      ${soon?`<button class="start" style="background:#d8dbe8;color:#7a7f96;box-shadow:none" onclick="toast('🚧 正在制作中，敬请期待')">即将上线</button>`
+            :`<button class="start" onclick="launchGame('${g.id}')">▶ 开始游戏</button>`}
+      <button class="fav2 ${fav?'on':''}" onclick="toggleFav('${g.id}')" aria-label="收藏">${fav?'♥':'♡'}</button>
+    </div></div></div>`;
+}
+function viewRank(){
+  const rows = GAMES.filter(g=>stats[g.id] && (stats[g.id].best>0)).sort((a,b)=>(stats[b.id].best||0)-(stats[a.id].best||0));
+  return `<div class="view on">
+  <div class="page-h"><h2>🏆 排行榜</h2></div>
+  <div class="rank-hero"><div class="mascot">${MASCOT}</div><h3>全网排行榜即将上线</h3><p>云端排行正在路上，先看看你在本机的最佳成绩</p></div>
+  <div class="sec" style="margin-top:4px"><div class="sec-h"><h2><span class="dot"></span>我的本地纪录</h2></div></div>
+  <div class="rank-list">${rows.length? rows.map((g,i)=>`<div class="rank-row"><div class="no ${i===0?'top':''}">${i+1}</div>
+    <div class="g"><div class="n">${esc(g.name)}</div><div class="s">${catName(g.cat)} · 玩过 ${stats[g.id].plays} 次</div></div>
+    <div class="score">${stats[g.id].best} 分</div></div>`).join('')
+  : `<div class="empty">还没有成绩记录，去玩一局梳毛大师吧！</div>`}</div></div>`;
+}
+function viewMe(){
+  const s = summary();
+  const favGames = favs.map(gameById).filter(Boolean);
+  return `<div class="view on">
+  <div class="page-h"><h2>👤 我的</h2></div>
+  <div class="me-head"><div class="mascot">${MASCOT}</div><div><h3>游客玩家</h3><p>数据保存在本机 · 登录同步功能即将推出</p></div></div>
+  <div class="sec" style="margin-top:12px"><div class="stat-row" style="margin-top:0">
+    <div class="stat-cell"><div class="v">${s.playedCount}</div><div class="k">玩过的游戏</div></div>
+    <div class="stat-cell"><div class="v">${s.totalPlays}</div><div class="k">累计次数</div></div>
+    <div class="stat-cell"><div class="v">${s.favCount}</div><div class="k">收藏</div></div>
+    <div class="stat-cell"><div class="v">${achvDone.length}/${ACHV.length}</div><div class="k">成就</div></div></div></div>
+  <div class="sec"><div class="sec-h"><h2><span class="dot"></span>我的收藏</h2></div>
+    ${favGames.length?`<div class="grid">${favGames.map(cardHTML).join('')}</div>`:`<div class="empty">还没有收藏，点游戏卡片右上角的 ♡ 收藏喜欢的游戏</div>`}</div>
+  <div class="sec"><div class="sec-h"><h2><span class="dot"></span>成就墙</h2></div>
+    ${ACHV.map(a=>{ const done = achvDone.includes(a.id); return `<div class="achv-row ${done?'':'lock'}"><div class="ai">${a.icon}</div><div class="at"><div class="n">${a.name}</div><div class="d">${a.desc}</div></div><div class="st">${done?'已解锁':'未解锁'}</div></div>`; }).join('')}</div>
+  <button class="danger-btn" onclick="clearData()">清除全部本地数据</button>
+  </div>`;
+}
+/* ================= 路由与导航 ================= */
+const TABS = [
+  {route:'home',  name:'首页',   icon:'home'},
+  {route:'games', name:'游戏',   icon:'games'},
+  {route:'rank',  name:'排行榜', icon:'rank'},
+  {route:'me',    name:'我的',   icon:'me'}
+];
+const tabbar = document.getElementById('tabbar');
+function renderTabs(active){
+  tabbar.innerHTML = TABS.map(t=>`<button class="${active===t.route?'on':''}" onclick="go('#/${t.route}')"><span class="tb-ic">${ICONS[t.icon]}</span>${t.name}</button>`).join('');
+}
+function go(hash){ if(location.hash===hash) render(); else location.hash = hash; }
+function doSearch(){
+  const v = document.getElementById('homeSearch').value.trim();
+  hallState.q = v; hallState.cat = 'all'; go('#/games');
+}
+function setCat(id){ hallState.cat = id; render(); }
+function clearData(){
+  if(!confirm('确定要清除全部本地数据吗？（最近玩过、收藏、最高分、成就都会清空）')) return;
+  ['recent','favs','stats','achv'].forEach(k=>localStorage.removeItem('wansha_'+k));
+  recent = []; favs = []; stats = {}; achvDone = [];
+  toast('已清除'); render();
+}
+function parseRoute(){
+  const h = location.hash.replace(/^#\/?/, '');
+  const [path, qs] = h.split('?');
+  const parts = path.split('/').filter(Boolean);
+  const params = new URLSearchParams(qs||'');
+  if(parts[0]==='game' && parts[1]) return {view:'detail', id:parts[1]};
+  if(parts[0]==='games'){ if(params.get('cat')) hallState.cat = params.get('cat'); return {view:'games'}; }
+  if(parts[0]==='rank') return {view:'rank'};
+  if(parts[0]==='me') return {view:'me'};
+  return {view:'home'};
+}
+function render(){
+  const r = parseRoute();
+  let html = '', tab = r.view;
+  if(r.view==='home') html = viewHome();
+  else if(r.view==='games') html = viewGames();
+  else if(r.view==='detail'){ html = viewDetail(r.id); tab = 'games'; }
+  else if(r.view==='rank') html = viewRank();
+  else if(r.view==='me') html = viewMe();
+  app.innerHTML = html;
+  renderTabs(tab);
+  window.scrollTo(0,0);
+  const hs = document.getElementById('homeSearch');
+  if(hs) hs.addEventListener('keydown', e=>{ if(e.key==='Enter') doSearch(); });
+  const gs = document.getElementById('hallSearch');
+  if(gs){
+    gs.addEventListener('input', e=>{ hallState.q = e.target.value; const pos = e.target.selectionStart; render(); const n = document.getElementById('hallSearch'); if(n){ n.focus(); n.setSelectionRange(pos,pos); } });
+    gs.addEventListener('keydown', e=>{ if(e.key==='Enter'){ hallState.q = e.target.value; render(); } });
+  }
+  const so = document.getElementById('hallSort');
+  if(so) so.addEventListener('change', e=>{ hallState.sort = e.target.value; render(); });
+}
+window.addEventListener('hashchange', render);
+/* ================= 游戏启动 / 退出 / 成绩回传 ================= */
+const player = document.getElementById('player');
+const pFrame = document.getElementById('pFrame');
+let currentGame = null;
+function launchGame(id){
+  const g = gameById(id); if(!g || g.status!=='live') return;
+  recordPlay(id);
+  currentGame = g;
+  document.getElementById('pTitle').textContent = g.name;
+  document.getElementById('pLoad').style.display = 'flex';
+  pFrame.src = g.url;
+  player.classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closePlayer(){
+  player.classList.remove('on');
+  pFrame.src = 'about:blank';
+  currentGame = null;
+  document.body.style.overflow = '';
+  render();
+}
+pFrame.addEventListener('load', ()=>{ document.getElementById('pLoad').style.display = 'none'; });
+document.getElementById('pBack').addEventListener('click', closePlayer);
+document.getElementById('pExt').addEventListener('click', ()=>{ if(currentGame) window.open(currentGame.url, '_blank'); });
+window.addEventListener('message', e=>{
+  const d = e.data || {};
+  if(d.type !== 'wansha:result' || !d.game) return;
+  const g = gameById(d.game);
+  if(!g || (g.origin && e.origin !== g.origin)) return;   // 校验来源，防伪造
+  const score = Math.max(0, Math.floor(Number(d.score)||0));
+  if(score > 0) recordScore(g.id, score);
+});
+render();
+</script>
+</body>
+</html>
