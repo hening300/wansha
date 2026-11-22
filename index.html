@@ -107,6 +107,9 @@ a{color:inherit;text-decoration:none}
 .detail-cover{margin:12px 14px 0;border-radius:22px;overflow:hidden;height:210px;box-shadow:0 8px 22px rgba(32,39,70,.12)}
 .detail-cover svg{width:100%;height:100%;display:block}
 .big-card .cover img,.card .cover img,.recent-item .rc img,.detail-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.big-card .cover:has(img.full-art){height:auto;aspect-ratio:16/9}
+.detail-cover:has(img.full-art){height:auto;aspect-ratio:16/9}
+.card .cover img.full-art,.recent-item .rc img.full-art{object-fit:contain;background:linear-gradient(135deg,#FFE3B3,#F7C873)}
 .detail-body{margin:14px}
 .detail-body h2{font-size:23px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .detail-body .meta{margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -164,7 +167,13 @@ a{color:inherit;text-decoration:none}
 #player .pbar .pt{font-weight:700;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #player .pbar .ext{font-size:12px;color:#ffd9a0;background:rgba(255,255,255,.12);padding:7px 11px;border-radius:999px}
 #player iframe{flex:1;width:100%;border:none;background:#fff}
-#player .pload{position:absolute;inset:50px 0 0;display:flex;align-items:center;justify-content:center;color:#aab;font-size:14px;pointer-events:none}
+#player .pload{position:absolute;inset:50px 0 0;display:none;align-items:center;justify-content:center;pointer-events:none;background:#11142a}
+#player .pload .pl-box{width:230px;text-align:center}
+#player .pload .pl-ic{width:64px;height:64px;border-radius:16px;margin:0 auto 12px;display:block}
+#player .pload .pl-title{color:#dfe3f5;font-size:14px;margin-bottom:10px}
+#player .pload .pl-bar{height:10px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}
+#player .pload .pl-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--orange),var(--green));transition:width .18s ease}
+#player .pload .pl-pct{color:#8f96b8;font-size:12px;margin-top:8px}
 /* toast */
 #toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 26px);transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.25);white-space:nowrap}
 #toast.on{opacity:1;transform:translateX(-50%)}
@@ -179,7 +188,7 @@ a{color:inherit;text-decoration:none}
     <div class="pt" id="pTitle">游戏</div>
     <button class="ext" id="pExt">全屏打开</button>
   </div>
-  <div class="pload" id="pLoad">游戏加载中…</div>
+  <div class="pload" id="pLoad"><div class="pl-box"><img class="pl-ic" src="/icon.png" alt=""><div class="pl-title">游戏加载中…</div><div class="pl-bar"><div class="pl-fill" id="pFill"></div></div><div class="pl-pct" id="pPct">0%</div></div></div>
   <iframe id="pFrame" title="game" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-orientation-lock"></iframe>
 </div>
 <div id="toast"></div>
@@ -202,7 +211,7 @@ const MASCOT = `<svg viewBox="0 0 100 100" fill="none" aria-label="玩玩">
 </svg>`;
 /* 游戏封面（统一风格：圆角底色＋简笔场景） */
 const COVERS = {
-brushcat:`<img src="/cover-brush.webp" alt="梳毛大师" style="object-position:50% 36%">`,
+brushcat:`<img class="full-art" src="/cover-brush.webp" alt="梳毛大师">`,
 memory:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#DCD2FA"/><g><rect x="70" y="46" width="66" height="92" rx="12" fill="#fff"/><rect x="158" y="46" width="66" height="92" rx="12" fill="#B49BF4"/><rect x="246" y="46" width="66" height="92" rx="12" fill="#fff"/><path d="M103 74 l4.5 9.2 10.1 1.5 -7.3 7.1 1.7 10 -9 -4.7 -9 4.7 1.7 -10 -7.3 -7.1 10.1 -1.5Z" fill="#FFB84D"/><circle cx="279" cy="92" r="15" fill="#FFB84D"/><text x="191" y="106" font-size="34" fill="#fff" font-weight="800" text-anchor="middle">?</text></g><rect y="164" width="400" height="36" fill="#C4B2F5"/></svg>`,
 number:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#CDEEE0"/><g font-weight="800" text-anchor="middle"><rect x="92" y="38" width="66" height="66" rx="14" fill="#68CFA4"/><text x="125" y="82" font-size="30" fill="#fff">2</text><rect x="168" y="38" width="66" height="66" rx="14" fill="#3FB68A"/><text x="201" y="82" font-size="30" fill="#fff">4</text><rect x="244" y="38" width="66" height="66" rx="14" fill="#FFB84D"/><text x="277" y="82" font-size="28" fill="#5b3a00">16</text><rect x="130" y="114" width="66" height="66" rx="14" fill="#B49BF4"/><text x="163" y="158" font-size="28" fill="#fff">32</text><rect x="206" y="114" width="66" height="66" rx="14" fill="#202746"/><text x="239" y="158" font-size="26" fill="#FFB84D">64</text></g></svg>`,
 tap:`<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><rect width="400" height="200" fill="#FFE9C7"/><circle cx="200" cy="102" r="58" fill="#FFB84D"/><circle cx="200" cy="102" r="42" fill="#FFCF87"/><path d="M206 62 L182 106 h16 L190 142 L224 94 h-17 L216 62Z" fill="#202746"/><g stroke="#FF9E2C" stroke-width="6" stroke-linecap="round"><path d="M118 62 l-16 -14"/><path d="M282 62 l16 -14"/><path d="M104 108 h-22"/><path d="M296 108 h22"/></g></svg>`,
@@ -475,19 +484,36 @@ function launchGame(id){
   recordPlay(id);
   currentGame = g;
   document.getElementById('pTitle').textContent = g.name;
-  document.getElementById('pLoad').style.display = 'flex';
+  plStart();
   pFrame.src = g.url;
   player.classList.add('on');
   document.body.style.overflow = 'hidden';
 }
 function closePlayer(){
   player.classList.remove('on');
+  clearInterval(plTimer);
   pFrame.src = 'about:blank';
   currentGame = null;
   document.body.style.overflow = '';
   render();
 }
-pFrame.addEventListener('load', ()=>{ document.getElementById('pLoad').style.display = 'none'; });
+let plTimer = null, plVal = 0;
+function plRender(){ document.getElementById('pFill').style.width = plVal + '%'; document.getElementById('pPct').textContent = Math.floor(plVal) + '%'; }
+function plStart(){
+  const el = document.getElementById('pLoad');
+  el.style.display = 'flex'; el.style.opacity = '1';
+  plVal = 0; plRender();
+  clearInterval(plTimer);
+  plTimer = setInterval(()=>{ plVal += Math.max(0.6, (92 - plVal) * 0.045); if(plVal >= 92){ plVal = 92; } plRender(); }, 120);
+}
+function plDone(){
+  if(!currentGame) return;
+  clearInterval(plTimer);
+  plVal = 100; plRender();
+  const el = document.getElementById('pLoad');
+  setTimeout(()=>{ el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(()=>{ el.style.display = 'none'; el.style.transition = ''; }, 320); }, 180);
+}
+pFrame.addEventListener('load', plDone);
 document.getElementById('pBack').addEventListener('click', closePlayer);
 document.getElementById('pExt').addEventListener('click', ()=>{ if(currentGame) window.open(currentGame.url, '_blank'); });
 window.addEventListener('message', e=>{
